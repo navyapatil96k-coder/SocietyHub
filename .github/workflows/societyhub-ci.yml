@@ -3,22 +3,25 @@ name: SocietyHub CI Pipeline
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
   pull_request:
-    branches:
-      - main
-
+    branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-backend:
-    name: Build Java Backend
+  backend:
+    name: Verify Java Backend
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Java 21
@@ -29,19 +32,20 @@ jobs:
           cache: maven
           cache-dependency-path: societyhub-backend/pom.xml
 
-      - name: Verify Java and Maven
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME"
-          java -version
-          javac -version
-          mvn -version
-
-      - name: Build backend
+      - name: Verify backend
         working-directory: societyhub-backend
-        run: mvn -B -DskipTests clean package
+        run: mvn -B --no-transfer-progress clean verify
 
-  build-frontend:
-    name: Build React Frontend
+      - name: Upload backend WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: societyhub-backend-war
+          path: societyhub-backend/target/societyhub.war
+          if-no-files-found: error
+          retention-days: 7
+
+  frontend:
+    name: Lint and Build React Frontend
     runs-on: ubuntu-latest
 
     defaults:
@@ -49,19 +53,30 @@ jobs:
         working-directory: societyhub-frontend
 
     steps:
-      - name: Checkout code
+      - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: societyhub-frontend/package-lock.json
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
 
       - name: Build frontend
         run: npm run build
+
+      - name: Upload frontend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: societyhub-frontend-dist
+          path: societyhub-frontend/dist/
+          if-no-files-found: error
+          retention-days: 7
 ```

@@ -38,7 +38,7 @@ function App() {
       } else {
         setMessage("Invalid username or password");
       }
-    } catch (error) {
+    } catch {
       setMessage("Cannot connect to Java backend");
     }
   };

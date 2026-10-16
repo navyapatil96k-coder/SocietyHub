@@ -217,6 +217,10 @@ if (activePage === "notices") {
             <div className="header-avatar">
               A
             </div>
+
+            <button className="logout-button" onClick={onLogout}>
+              Log out
+            </button>
           </div>
 
         </header>
