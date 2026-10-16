@@ -178,6 +178,16 @@
   font-size: 17px;
 }
 
+.logout-button {
+  padding: 11px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  color: #172033;
+  font: inherit;
+  cursor: pointer;
+}
+
 .header-avatar {
   width: 43px;
   height: 43px;
