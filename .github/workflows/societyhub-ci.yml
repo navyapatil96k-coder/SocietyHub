@@ -17,14 +17,14 @@ concurrency:
 jobs:
   backend:
     name: Verify Java Backend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -36,7 +36,7 @@ jobs:
         run: mvn -B --no-transfer-progress clean verify
 
       - name: Upload backend WAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: societyhub-backend-war
           path: societyhub-backend/target/societyhub.war
@@ -45,7 +45,7 @@ jobs:
 
   frontend:
     name: Lint and Build React Frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     defaults:
       run:
@@ -53,10 +53,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: npm
@@ -72,7 +72,7 @@ jobs:
         run: npm run build
 
       - name: Upload frontend build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: societyhub-frontend-dist
           path: societyhub-frontend/dist/
